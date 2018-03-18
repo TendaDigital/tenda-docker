@@ -21,6 +21,9 @@ RUN addgroup -g 1000 node \
         python2-dev \
         py-setuptools \
         libc6-compat \
+    && apk add  --update-cache --repository https://dl-3.alpinelinux.org/alpine/edge/testing/ \
+        vips-dev \
+        fftw-dev \
   # gpg keys listed at https://github.com/nodejs/node#release-team
   && for key in \
     9554F04D7259F04124DE6B476D5A82AC7E37093B \
