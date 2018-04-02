@@ -1,7 +1,21 @@
-FROM alpine:3.6
+# Using docker base image(with alpine 3.6)
+FROM docker:latest
+MAINTAINER Tenda Digital "developers@tenda.digital"
 
+ENV GCLOUD_SDK_VERSION=195.0.0
+ENV GCLOUD_SDK_URL=https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${GCLOUD_SDK_VERSION}-linux-x86_64.tar.gz
 ENV NPM_CONFIG_LOGLEVEL info
 ENV NODE_VERSION 8.6.0
+
+RUN apk add --no-cache --update python
+RUN apk add curl openssl \
+ && mkdir /opt && cd /opt \
+ && wget -q -O - $GCLOUD_SDK_URL |tar zxf - \
+ && /bin/sh -l -c "echo Y | /opt/google-cloud-sdk/install.sh && exit" \
+ && /bin/sh -l -c "echo Y | /opt/google-cloud-sdk/bin/gcloud components install alpha && exit" \
+ && rm -rf /opt/google-cloud-sdk/.install/.backup
+
+ENV PATH="/opt/google-cloud-sdk/bin:${PATH}"
 
 RUN addgroup -g 1000 node \
     && adduser -u 1000 -G node -s /bin/sh -D node \
@@ -13,19 +27,10 @@ RUN addgroup -g 1000 node \
         gnupg \
         libgcc \
         linux-headers \
-    && apk add --no-cache \
         make \
         g++ \
         gcc \
-        python2 \
-        python2-dev \
-        py-setuptools \
-        libc6-compat \
-    && apk add  --update-cache --repository https://dl-3.alpinelinux.org/alpine/edge/testing/ \
-        vips-dev \
-        fftw-dev \
-  # gpg keys listed at https://github.com/nodejs/node#release-team
-  && for key in \
+    && for key in \
     9554F04D7259F04124DE6B476D5A82AC7E37093B \
     94AE36675C464D64BAFA68DD7434390BDBE9B9C5 \
     FD3A5288F042B6850C66B31F09FE44734EB7990E \
@@ -78,5 +83,7 @@ RUN apk add --no-cache --virtual .build-deps-yarn curl gnupg tar \
   && apk del .build-deps-yarn
 
 ENV PYTHON /usr/bin/python
+
+WORKDIR /root
 
 CMD [ "node" ]
