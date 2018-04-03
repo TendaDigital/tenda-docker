@@ -71,11 +71,12 @@ ENV GCLOUD_SDK_URL=https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/go
 
 RUN apk add --no-cache --update python
 RUN apk add curl openssl \
- && mkdir /opt && cd /opt \
+ && cd /opt \
  && wget -q -O - $GCLOUD_SDK_URL |tar zxf - \
  && /bin/sh -l -c "echo Y | /opt/google-cloud-sdk/install.sh && exit" \
  && /bin/sh -l -c "echo Y | /opt/google-cloud-sdk/bin/gcloud components install alpha && exit" \
- && rm -rf /opt/google-cloud-sdk/.install/.backup
+ && rm -rf /opt/google-cloud-sdk/.install/.backup \
+ && apk del curl
 
 ENV PATH="/opt/google-cloud-sdk/bin:${PATH}"
 
