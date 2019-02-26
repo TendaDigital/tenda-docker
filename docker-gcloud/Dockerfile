@@ -1,7 +1,7 @@
 FROM docker:latest
 MAINTAINER Tenda Digital "developers@tenda.digital"
 
-ENV NODE_VERSION 8.11.1
+ENV NODE_VERSION 10.15.1
 
 RUN addgroup -g 1000 node \
     && adduser -u 1000 -G node -s /bin/sh -D node \
